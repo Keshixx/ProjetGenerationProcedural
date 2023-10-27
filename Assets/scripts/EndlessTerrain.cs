@@ -11,7 +11,6 @@ public class EndlessTerrain : MonoBehaviour
     public LODInfo[] detailLevels;
     public static float maxViewDst;
     
-    private static bool test;
     public Transform viewer;
     public Material mapMaterial;
     public static Vector2 viewerPosition;
