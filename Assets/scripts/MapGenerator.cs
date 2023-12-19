@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 
 public class MapGenerator : MonoBehaviour
 {
-    public enum DrawMode {NoiseMap,ColorMap, Mesh};
+    public enum DrawMode {NoiseMap,ColorMap, Mesh, TexturedMesh};
     public DrawMode drawMode;
 
 
@@ -35,7 +35,6 @@ public class MapGenerator : MonoBehaviour
 
     Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
     Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
-
     public static int mapChunkSize
     {
         get{
@@ -128,6 +127,7 @@ public class MapGenerator : MonoBehaviour
     {
         float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize + 2 ,mapChunkSize + 2,seed,noiseScale,octaves,persistance,lacunarity,center + offset,normalizeMode);
         Color[] colorMap = new Color[mapChunkSize*mapChunkSize];
+        Texture2D[] textures = new Texture2D[mapChunkSize*mapChunkSize];
         for(int y=0;y<mapChunkSize;y++)
         {
             for(int x=0;x<mapChunkSize;x++)
@@ -138,13 +138,14 @@ public class MapGenerator : MonoBehaviour
                     if(currentHeight >= regions[i].height)
                     {
                         colorMap[y*mapChunkSize+x] = regions[i].color;
+                        textures[y*mapChunkSize+x] = regions[i].texture;
                     }else{
                         break;
                     }
                 }
             }
         }
-        return new MapData(noiseMap,colorMap);
+        return new MapData(noiseMap,colorMap,textures);
     }
 
     struct MapThreadInfo<T>
@@ -176,14 +177,19 @@ public class MapGenerator : MonoBehaviour
         public string name;
         public float height;
         public Color color;
+
+        public Texture2D texture;
     }
 }
 public struct MapData{
         public readonly float[,] heightMap;
         public readonly Color[] colorMap;
-        public MapData(float[,] heightMap,Color[] colorMap)
+
+        public Texture2D[] textures;
+        public MapData(float[,] heightMap,Color[] colorMap,Texture2D[] textures)
         {
             this.heightMap = heightMap;
             this.colorMap = colorMap;
+            this.textures = textures;
         }
     }

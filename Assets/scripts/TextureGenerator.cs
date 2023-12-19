@@ -30,4 +30,31 @@ public static class TextureGenerator
 
         return TextureFromColorMap(colorMap,width,height);
     }
+
+    public static Texture2D TexturesToTextureFromHeightMap(float[,] heightMap, Texture2D[] textures)
+    {
+        int width = heightMap.GetLength(0);
+        int height = heightMap.GetLength(1);
+
+        // Check if dimensions match
+        if (width != textures.GetLength(0) || height != textures.GetLength(1))
+        {
+            // Handle the case where dimensions don't match (e.g., return null or throw an error).
+            // You can't create a texture if dimensions don't match.
+            // Here, I'll return null as an example.
+            return null;
+        }
+
+        Color[] colorMap = new Color[width * height];
+        
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                colorMap[y * width + x] = textures[y * width + x].GetPixel(x, y);
+            }
+        }
+
+        return TextureFromColorMap(colorMap, width, height);
+    }
 }
