@@ -179,114 +179,66 @@ public class GenerateurDeForme : MonoBehaviour
         visualizationPoint.transform.parent = parent.transform;
     }
 
-    void CreateBranchFromPoint(List<Vector3> points, Vector3 point, float precision, GameObject branch)
+    //Retourne le vecteur qui va de p1 à p2
+    Vector3 vectFrom2Points(Vector3 point1, Vector3 point2)
     {
-        List<Vector3> pointsProches = new List<Vector3>();
-        points.Remove(point);
-        float desiredAngle = 45f;
-
-        foreach (Vector3 point2 in points)
-        {
-            if (point2.y > point.y && point2.y < point.y + 0.7f && Vector3.Angle(point2 - point, Vector3.up) < desiredAngle)
-            {
-                pointsProches.Add(point2);
-            }
-        }
-
-        if (pointsProches.Count >= 1)
-        {
-            Vector3 pointSuivant = pointsProches[0];
-            Debug.Log(" [" + point.x + "," + point.y + "," + point.z + "],[" + pointSuivant.x + "," + pointSuivant.y + "," + pointSuivant.z + "]");
-            
-            // Calculer la hauteur du cylindre
-            float hauteurCylindre = (pointSuivant.y - point.y) / 2f;
-
-            // Créer le cylindre à partir de la base
-            GameObject cylindre = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            cylindre.transform.localScale = new Vector3(0.1f, hauteurCylindre * 2f, 0.1f);
-            
-            // Calculer la position du cylindre
-            Vector3 positionCylindre = new Vector3(point.x, point.y + hauteurCylindre, point.z);
-
-            // Appliquer la rotation au cylindre
-            cylindre.transform.rotation = Quaternion.LookRotation(pointSuivant - point, Vector3.up);
-
-            // Ajuster la position du cylindre après la rotation
-            cylindre.transform.position = positionCylindre;
-
-            // Définir le parent
-            cylindre.transform.parent = branch.transform;
-
-            // Appeler récursivement pour créer la suite de la branche
-            CreateBranchFromPoint(points, pointSuivant, precision, branch);
-        }
-        else
-        {
-            Debug.Log("Fin de la branche");
-        }
-            /*
-            points.Remove(point);
-            
-            List<Vector3> pointsProches = new List<Vector3>();
-            
-            foreach (Vector3 point2 in points)
-            {
-                if (point2.y > point.y && point2.y < point.y + 2f)
-                {
-                    pointsProches.Add(point2);
-                }
-            }
-
-            if (pointsProches.Count == 1)
-            {
-                Vector3 pointSuivant = pointsProches[0];
-                points.Remove(pointSuivant);
-
-                GameObject cylindre = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                cylindre.transform.parent = branch.transform;
-
-                // Utiliser Quaternion.LookRotation pour calculer la rotation entre les deux points
-                cylindre.transform.rotation = Quaternion.LookRotation(pointSuivant - point);
-
-                cylindre.transform.localScale = new Vector3(0.1f, Vector3.Distance(point, pointSuivant) / 2, 0.1f);
-                cylindre.transform.position = new Vector3(point.x, point.y + Vector3.Distance(point, pointSuivant) / 2, point.z);
-
-                return CreateBranchFromPoint(points, pointSuivant, precision, branch);
-            }
-            else if (pointsProches.Count > 1)
-            {
-                Vector3 pointSuivant = Vector3.zero;
-                
-                foreach (Vector3 point2 in pointsProches)
-                {
-                    pointSuivant += point2;
-                }
-                
-                foreach (Vector3 point2 in pointsProches)
-                {
-                    points.Remove(point2);
-                }
-
-                pointSuivant /= pointsProches.Count;
-                points.Remove(pointSuivant);
-
-                GameObject cylindre = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                cylindre.transform.parent = branch.transform;
-
-                // Utiliser Quaternion.LookRotation pour calculer la rotation entre les deux points
-                cylindre.transform.rotation = Quaternion.LookRotation(pointSuivant - point);
-
-                cylindre.transform.localScale = new Vector3(0.1f, Vector3.Distance(point, pointSuivant) / 2, 0.1f);
-                cylindre.transform.position = new Vector3(point.x, point.y + Vector3.Distance(point, pointSuivant) / 2, point.z);
-
-                return CreateBranchFromPoint(points, pointSuivant, precision, branch);
-            }
-            else
-            {
-                return true;
-            }
-            */
-
+        return new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
     }
+
+
+    Vector3 orthogonal(Vector3 vect)
+    {
+        return new Vector3(vect.z, vect.y, -vect.x);
+    }
+
+
+    List<Vector3> champsDeVision(Vector3 direction,Vector3 p1)
+    {
+        Vector3 meridianne=p1+direction;
+        Vector3 orthogo = orthogonal(direction);
+        Vector3 p2 = meridianne + orthogo;
+        Vector3 p3 = meridianne - orthogo;
+        return new List<Vector3> { p1, p2, p3 };
+    }
+
+
+    bool triangleDesEnfers(Vector3 a,Vector3 b, Vector3 p)
+    //https://www.youtube.com/watch?v=kkucCUlyIUE&ab_channel=Quantale
+    /*
+    On va appliqué E a toute les couples de dimensions possible et pas seulement x,y car nous somme en 3D
+    E(a,b) = (a.x - p.x) * (b.y - p.y) - (a.y - p.y) * (b.x - p.x)
+    E(a,b) > 0 si b est à gauche de a
+    E(a,b) < 0 si b est à droite de a
+    E(a,b) = 0 si b est sur a
+    */
+    {
+
+       return ((a.x - p.x) * (b.y - p.y) - (a.y - p.y) * (b.x - p.x)>0 && 
+       (a.z - p.z) * (b.y - p.y) - (a.y - p.y) * (b.z - p.z)>0 && 
+       (a.x - p.x) * (b.z - p.z) - (a.z - p.z) * (b.x - p.x)>0 ) ||
+         ((a.x - p.x) * (b.y - p.y) - (a.y - p.y) * (b.x - p.x) < 0 &&
+         (a.z - p.z) * (b.y - p.y) - (a.y - p.y) * (b.z - p.z) < 0 &&
+            (a.x - p.x) * (b.z - p.z) - (a.z - p.z) * (b.x - p.x) < 0);
+    }
+
+    bool estEnVu(List<Vector3> points, Vector3 p)
+    {
+        return triangleDesEnfers(points[0], points[1], p) && triangleDesEnfers(points[0], points[2], p) && triangleDesEnfers(points[1], points[2], p);
+    }
+
+    void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p,Vector3 direction)
+    {
+        List<Vector3> pointsVu = new List<Vector3>();
+        List<Vector3> visu = champsDeVision(direction, p);
+        foreach (Vector3 point in allPoints)
+        {
+            if (estEnVu(visu, point))
+            {
+                pointsVu.Add(point);
+            }
+        }
+        Debug.Log(pointsVu.Count);
+    }
+
 
 }
