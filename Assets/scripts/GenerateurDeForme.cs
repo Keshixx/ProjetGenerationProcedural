@@ -150,7 +150,7 @@ public class GenerateurDeForme : MonoBehaviour
                 point.x *= epaisseurArbre;
                 point.y *= hauteurArbre;
                 point.z *= epaisseurArbre;
-                if(RandomBool())
+                if(RandomBool() && RandomBool())
                 {
                     CreateVisualizationPoint(point, parent);
                     pointsArray.Add(point + forme.transform.position);
@@ -179,7 +179,7 @@ public class GenerateurDeForme : MonoBehaviour
         }
         pointsArray.Remove(elem);
         Branches branches = this.gameObject.GetComponent<Branches>();
-        branches.CreateBranchFromPoint(pointsArray,elem,new Vector3(0,1,0), forme.transform.position);
+        branches.CreateBranchFromPoint(pointsArray,elem,new Vector3(0,1,0), forme.transform.position, 1.5f);
     }
 
     void CreateVisualizationPoint(Vector3 position, GameObject parent)

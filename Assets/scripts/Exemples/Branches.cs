@@ -13,20 +13,20 @@ public class Branches : MonoBehaviour
     [SerializeField]
     private GameObject p4;
     [SerializeField]
-    private float force = 0.1f;
+    private float forceGlobal = 0.1f;
     public Branches()
     {
         
     }
     void Start()
     {
-        /*Vector3 direction = new Vector3(0,1,0);
-        List<Vector3> points = new List<Vector3>();
-        points.Add(p2.transform.position);
-        points.Add(p3.transform.position);
-        points.Add(p4.transform.position);
-        CreateBranchFromPoint(points, p1.transform.position, direction);*/
-        CreateRandomPoint(350);
+        // Vector3 direction = new Vector3(1,0,0);
+        // List<Vector3> points = new List<Vector3>();
+        // points.Add(p2.transform.position);
+        // points.Add(p3.transform.position);
+        // points.Add(p4.transform.position);
+        // CreateBranchFromPoint(points, p1.transform.position, direction, p1.transform.position, forceGlobal);
+        CreateRandomPoint(500);
     }
 
     void CreateRandomPoint(int nbPoint)
@@ -36,19 +36,22 @@ public class Branches : MonoBehaviour
         float y;
         float z;
         List<Vector3> maListe = new List<Vector3>();
+        List<GameObject> mesPoints = new List<GameObject>();
         GameObject point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         point.transform.localScale  = new Vector3(0.1f,0.1f,0.1f);
         point.transform.position = new Vector3(0,0,0);
         Vector3 p1 = point.transform.position;
+        mesPoints.Add(point);
         for(int i = 0; i<nbPoint; i++)
         {
             x = ((float)random.NextDouble() * 2f - 1f) * 2;
-            y = ((float)random.NextDouble()) * 2;
+            y = ((float)random.NextDouble()) * 5;
             z = ((float)random.NextDouble() * 2f - 1f) * 2;
             point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             point.transform.localScale  = new Vector3(0.1f,0.1f,0.1f);
             point.transform.position = new Vector3(x,y,z);
             maListe.Add(point.transform.position);
+            mesPoints.Add(point);
         }
         CreateBranchFromPoint(maListe,p1,new Vector3(0,10,0), p1);
         List<Vector3> maListe2 = new List<Vector3>(maListe);
@@ -60,6 +63,10 @@ public class Branches : MonoBehaviour
             }
         }
         maListe = maListe2;
+        foreach(GameObject elem in mesPoints)
+        {
+            Destroy(elem);
+        }
     }
 
     Vector3 vectFrom2Points(Vector3 point1, Vector3 point2)
@@ -133,12 +140,16 @@ public class Branches : MonoBehaviour
         //Debug.Log("p3 : "+p3);
         //Debug.Log("p4 : "+p4);
         //Debug.Log("p5 : "+p5);
-        //Debug.DrawLine(p1, p2, Color.red, 1000f);
-        //Debug.DrawLine(p1, p3, Color.red, 1000f);
-        //Debug.DrawLine(p2, p3, Color.red, 1000f);
-        //Debug.DrawLine(p1, p4, Color.blue, 1000f);
-        //Debug.DrawLine(p1, p5, Color.blue, 1000f);
-        //Debug.DrawLine(p4, p5, Color.blue, 1000f);
+        if(cpt ==1)
+        {
+            Debug.DrawLine(p1, p2, Color.red, 1000f);
+            Debug.DrawLine(p1, p3, Color.red, 1000f);
+            Debug.DrawLine(p2, p3, Color.red, 1000f);
+            Debug.DrawLine(p1, p4, Color.blue, 1000f);
+            Debug.DrawLine(p1, p5, Color.blue, 1000f);
+            Debug.DrawLine(p4, p5, Color.blue, 1000f);
+        }
+        
 
         return new List<Vector3> { p1, p2, p3, p4, p5 };
     }
@@ -253,7 +264,42 @@ public class Branches : MonoBehaviour
         return index;
     }
 
-    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin)
+    Vector3 MatchingVector2(Vector3 direction)
+    {
+        List <Vector3> maListe = new List<Vector3>();
+        maListe.Add(new Vector3(0,0,1)); //0 Devant
+        maListe.Add(new Vector3(0,0,-1)); //1 Derriere
+        maListe.Add(new Vector3(0,1,0));//2 Haut
+        maListe.Add(new Vector3(1,0,0));//3 Droite
+        maListe.Add(new Vector3(-1,0,0));//4 Gauche
+        maListe.Add(new Vector3(-1,0,-1));//5 Gauche-Derriere
+        maListe.Add(new Vector3(-1,0,1));//6 Gauche-Devant
+        maListe.Add(new Vector3(1,0,-1));//7 Droite-Derriere
+        maListe.Add(new Vector3(1,0,1));//8 Droite-Devant
+        maListe.Add(new Vector3(1,1,0));//9 Haut-Droite
+        maListe.Add(new Vector3(-1,1,0));//10 Haut-Gauche
+        maListe.Add(new Vector3(0,1,1));//11 Haut-Devant
+        maListe.Add(new Vector3(0,1,-1));//12 Haut-Derriere
+        maListe.Add(new Vector3(-1,1,-1));//13 Haut-Gauche-Derriere
+        maListe.Add(new Vector3(-1,1,1));//14 Haut-Gauche-Devant
+        maListe.Add(new Vector3(1,1,-1));//15 Haut-Droite-Derriere
+        maListe.Add(new Vector3(1,1,1));//16 Haut-Droite-Devant
+
+        int index = 0;
+        float minimum = distanceDe(maListe[0],direction);
+        for(int i = 1; i<maListe.Count; i++)
+        {
+            float distance = distanceDe(maListe[i],direction);
+            if(distance <= minimum)
+            {
+                minimum = distance;
+                index = i;
+            }
+        }
+        return maListe[index];
+    }
+
+    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, float force = 1.5f)
     {//Y X Z
         List<Vector3> pointsVu = new List<Vector3>();
         List<Vector3> visu1 = new List<Vector3>();
@@ -404,6 +450,9 @@ public class Branches : MonoBehaviour
             {
                 if (DansPyramideY(visu1, point) && !pointsVu.Contains(point))
                 {
+                    if((p.z > point.z && p.z <= 0) || (p.z < point.z && p.z >= 0))
+                    if((p.x > point.x && p.x <= 0) || (p.x < point.x && p.x >= 0))
+                    if((p.y < point.y && p.y >= 0))
                     pointsVu.Add(point);
                 }
             }
@@ -414,6 +463,9 @@ public class Branches : MonoBehaviour
                 {
                     if(DansPyramideX(visu2,elem) && !pointsVu.Contains(elem))
                     {
+                        if((p.z > elem.z && p.z <= 0) || (p.z < elem.z && p.z >= 0))
+                        if((p.x > elem.x && p.x <= 0) || (p.x < elem.x && p.x >= 0))
+                        if((p.y < elem.y && p.y >= 0))
                         pointsVuCpy.Add(elem);
                     }
                 }
@@ -425,6 +477,9 @@ public class Branches : MonoBehaviour
                 {
                     if(DansPyramideZ(visu2,elem) && !pointsVu.Contains(elem))
                     {
+                        if((p.z > elem.z && p.z <= 0) || (p.z < elem.z && p.z >= 0))
+                        if((p.x > elem.x && p.x <= 0) || (p.x < elem.x && p.x >= 0))
+                        if((p.y < elem.y && p.y >= 0))
                         pointsVuCpy.Add(elem);
                     }
                 }
@@ -436,6 +491,9 @@ public class Branches : MonoBehaviour
             {
                 if (DansPyramideX(visu1, point) && !pointsVu.Contains(point))
                 {
+                    if((p.z > point.z && p.z <= 0) || (p.z < point.z && p.z >= 0))
+                    if((p.x > point.x && p.x <= 0) || (p.x < point.x && p.x >= 0))
+                    if((p.y < point.y && p.y >= 0))
                     pointsVu.Add(point);
                 }
             }
@@ -446,6 +504,9 @@ public class Branches : MonoBehaviour
                 {
                     if(DansPyramideY(visu2,elem) && !pointsVu.Contains(elem))
                     {
+                        if((p.z > elem.z && p.z <= 0) || (p.z < elem.z && p.z >= 0))
+                        if((p.x > elem.x && p.x <= 0) || (p.x < elem.x && p.x >= 0))
+                        if((p.y < elem.y && p.y >= 0))
                         pointsVuCpy.Add(elem);
                     }
                 }
@@ -457,6 +518,9 @@ public class Branches : MonoBehaviour
                 {
                     if(DansPyramideZ(visu2,elem) && !pointsVu.Contains(elem))
                     {
+                        if((p.z > elem.z && p.z <= 0) || (p.z < elem.z && p.z >= 0))
+                        if((p.x > elem.x && p.x <= 0) || (p.x < elem.x && p.x >= 0))
+                        if((p.y < elem.y && p.y >= 0))
                         pointsVuCpy.Add(elem);
                     }
                 }
@@ -468,6 +532,9 @@ public class Branches : MonoBehaviour
             {
                 if (DansPyramideZ(visu1, point) && !pointsVu.Contains(point))
                 {
+                    if((p.z > point.z && p.z <= 0) || (p.z < point.z && p.z >= 0))
+                    if((p.x > point.x && p.x <= 0) || (p.x < point.x && p.x >= 0))
+                    if((p.y < point.y && p.y >= 0))
                     pointsVu.Add(point);
                 }
             }
@@ -479,6 +546,9 @@ public class Branches : MonoBehaviour
                 {
                     if(DansPyramideY(visu2,elem) && !pointsVu.Contains(elem))
                     {
+                        if((p.z > elem.z && p.z <= 0) || (p.z < elem.z && p.z >= 0))
+                        if((p.x > elem.x && p.x <= 0) || (p.x < elem.x && p.x >= 0))
+                        if((p.y < elem.y && p.y >= 0))
                         pointsVuCpy.Add(elem);
                     }
                 }
@@ -490,6 +560,9 @@ public class Branches : MonoBehaviour
                 {
                     if(DansPyramideX(visu2,elem) && !pointsVu.Contains(elem))
                     {
+                        if((p.z > elem.z && p.z <= 0) || (p.z < elem.z && p.z >= 0))
+                        if((p.x > elem.x && p.x <= 0) || (p.x < elem.x && p.x >= 0))
+                        if((p.y < elem.y && p.y >= 0))
                         pointsVuCpy.Add(elem);
                     }
                 }
@@ -501,24 +574,99 @@ public class Branches : MonoBehaviour
         Debug.Log(pointsVu.Count);
         if(pointsVu.Count >=1)
         {
-            List<Vector3> pointsVuCpy = new List<Vector3>(pointsVu);
-            for(int i = 2; i < pointsVu.Count; i++)
+            cpt++;
+            // List<Vector3> pointsVuCpy = new List<Vector3>(pointsVu);
+            // for(int i = 2; i < pointsVu.Count; i++)
+            // {
+            //     pointsVuCpy.Remove(pointsVu[i]);
+            // }
+            // pointsVu = pointsVuCpy;
+            // Vector3 element = pointsVu[0];
+            // if(pointsVu.Count == 2) element = moyenneDe2Vex(pointsVu[0],pointsVu[1]);
+            // foreach(Vector3 elem in pointsVu)
+            // {
+            //     allPoints.Remove(elem);
+            // }
+            // if(element.y < p.y)
+            // {
+            //     element.y = p.y;
+            // }
+            // element.y=element.y*1.03f;
+            // Debug.DrawLine(p, element, Color.green, 1000f);
+            // Vector3 newDirection = element - p;
+            // CreateBranchFromPoint(allPoints,element,newDirection,origin,force*0.90f);
+            // System.Random random = new System.Random();
+            // CreateBranchFromPoint(allPoints,element,NewRandomDirection(newDirection),origin,force*0.90f);
+            //Random index 2 times
+            Vector3 newDirection;
+            Vector3 newDirection2;
+            System.Random random = new System.Random();
+            if(pointsVu.Count > 1)
             {
-                pointsVuCpy.Remove(pointsVu[i]);
+                int index1 = UnityEngine.Random.Range(0,pointsVu.Count);
+                int index2 = UnityEngine.Random.Range(0,pointsVu.Count);
+                
+            
+                while(index1 == index2)
+                {
+                    index2 = UnityEngine.Random.Range(0,pointsVu.Count);
+                }
+                for(int i = 0; i<pointsVu.Count; i++)
+                {
+                    if(i != index1 && i != index2)
+                    {
+                        pointsVu.Remove(pointsVu[i]);
+                    }
+                }
+                Vector3 element = moyenneDe2Vex(pointsVu[0],pointsVu[1]);
+                foreach(Vector3 elem in pointsVu)
+                {
+                    allPoints.Remove(elem);
+                }
+                Debug.DrawLine(p, element, Color.green, 1000f);
+                newDirection = element - p;
+                newDirection.y = Mathf.Abs(newDirection.y);
+                CreateBranchFromPoint(allPoints,element,newDirection,origin,force*0.70f);
+                foreach(Vector3 elem in pointsVu)
+                {
+                    if(UnityEngine.Random.Range(0,3) == 1)
+                    { 
+                        Debug.DrawLine(p, elem, Color.green, 1000f);
+                        newDirection = elem - p;
+                        newDirection.y = Mathf.Abs(newDirection.y);
+                        CreateBranchFromPoint(allPoints,elem,newDirection,origin,force*0.70f);
+                        if(UnityEngine.Random.Range(0,7) == 1)
+                        CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*0.70f);
+                    }
+                }
+
+            }else{
+                foreach(Vector3 elem in pointsVu)
+                {
+                    allPoints.Remove(elem);
+                }
+                foreach(Vector3 elem in pointsVu)
+                {
+                    Debug.DrawLine(p, elem, Color.green, 1000f);
+                    newDirection = elem - p;
+                    newDirection.y = Mathf.Abs(newDirection.y);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,force*0.70f);
+                    if(UnityEngine.Random.Range(0,3) == 1)
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*0.70f);
+                }
+                Debug.DrawLine(p, direction, Color.green, 1000f);
+                newDirection2 = direction - p;
+                newDirection2.y = Mathf.Abs(newDirection2.y);
+                CreateBranchFromPoint(allPoints,direction,newDirection2,origin,force*0.70f);
+                if(UnityEngine.Random.Range(0,3) == 1)
+                CreateBranchFromPoint(allPoints,direction,NewRandomDirection(newDirection2),origin,force*0.70f);
             }
-            pointsVu = pointsVuCpy;
-            Vector3 element = VectorMoyenEntreXVector(pointsVu);
-            pointsVu.RemoveAt(0);
-            pointsVu.RemoveAt(0);
-            if(element.y < p.y)
-            {
-                element.y = p.y;
-            }
-            Debug.DrawLine(p, element, Color.green, 1000f);
-            Vector3 newDirection = element - p;
-            CreateBranchFromPoint(allPoints,element,newDirection,origin);
-            CreateBranchFromPoint(allPoints,element,NewRandomDirection(),origin);
         }
+    }
+
+    Vector3 moyenneDe2Vex(Vector3 v1, Vector3 v2)
+    {
+        return new Vector3((v1.x+v2.x)/2,(v1.y+v2.y)/2,(v1.z+v2.z)/2);
     }
 
     void DeletePoint(Vector3 point,Vector3 origin)
@@ -544,12 +692,29 @@ public class Branches : MonoBehaviour
         return vecteurMoyen;
     }
 
-    Vector3 NewRandomDirection()
+    Vector3 NewRandomDirection(Vector3 direction)
     {
         System.Random random = new System.Random();
+        
         float x = ((float)random.NextDouble() * 2f - 1f);
         float y = ((float)random.NextDouble());
         float z = ((float)random.NextDouble() * 2f - 1f);
+        if((direction.x < 0 && x > 0) || (direction.x > 0 && x < 0))
+        {
+            x = -x;
+        }
+        Vector3 matchedVector = MatchingVector2(new Vector3(x,y,z));
+        while(matchedVector.x >= 0 && x <= 0 || matchedVector.x <= 0 && x >= 0)
+        {
+            x = ((float)random.NextDouble() * 2f - 1f);
+            y = ((float)random.NextDouble());
+            z = ((float)random.NextDouble() * 2f - 1f);
+            if((direction.x < 0 && x > 0) || (direction.x > 0 && x < 0))
+            {
+                x = -x;
+            }
+            matchedVector = MatchingVector2(new Vector3(x,y,z));
+        }
         return new Vector3(x,y,z);
     }
 }

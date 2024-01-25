@@ -10260,7 +10260,7 @@ MonoBehaviour:
   epaisseurTronc: 2
   hauteurArbre: 6.57
   epaisseurArbre: 12.04
-  precisionCouronne: 0.9
+  precisionCouronne: 0.63
   precisionTronc: 0.458
   autoUpdate: 0
 --- !u!114 &206865201
@@ -10279,7 +10279,7 @@ MonoBehaviour:
   p2: {fileID: 0}
   p3: {fileID: 0}
   p4: {fileID: 0}
-  force: 8
+  forceGlobal: 0.1
 --- !u!1 &207212681
 GameObject:
   m_ObjectHideFlags: 0
