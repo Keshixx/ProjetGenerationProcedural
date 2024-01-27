@@ -11,8 +11,8 @@ public class GenerateurDeForme : MonoBehaviour
     public float epaisseurArbre = 0.5f;
 
     //slider from 0.1 to 1
-    [Range(0.1f, 0.90f)]
-    public float precisionCouronne = 0.1f;
+    [Range(1f, 20000f)]
+    public float nombreDePoint = 100f;
     [Range(0.1f, 0.90f)]
     public float precisionTronc = 0.1f;
 
@@ -52,7 +52,10 @@ public class GenerateurDeForme : MonoBehaviour
         couronne.tag = "Tree";
         couronne.transform.position = new Vector3(0, tailleTronc*2 + (hauteurArbre/2)-0, 0);
         couronne.transform.parent = tronc.transform;
-        TransformFormToPoint(couronne, epaisseurArbre, hauteurArbre, precisionCouronne);
+        couronne.name = "couronne";
+        couronne.transform.localScale = new Vector3(epaisseurArbre, hauteurArbre, epaisseurArbre);
+        //TransformFormToPoint(couronne, epaisseurArbre, hauteurArbre, precisionCouronne);
+        CreateRandomPointInEllipsoide(couronne.transform.position, new Vector3(epaisseurArbre, hauteurArbre, epaisseurArbre), couronne, (int)nombreDePoint);
         TransformTroncToPoint(tronc, tailleTronc, epaisseurTronc, precisionTronc);
     }
 
@@ -121,7 +124,65 @@ public class GenerateurDeForme : MonoBehaviour
         branch.transform.position = forme.transform.position;
     }
 
-    void TransformFormToPoint(GameObject forme, float epaisseurArbre, float hauteurArbre,float precision)
+    void CreateRandomPointInEllipsoide(Vector3 center, Vector3 size, GameObject parent, int numberOfPoints)
+    {
+        // Calcul des carrés des tailles
+        float sizeXSquare = size.x * size.x;
+        float sizeYSquare = size.y * size.y;
+        float sizeZSquare = size.z * size.z;
+        int i = 0;
+        while(i < numberOfPoints)
+        {
+            float x = Random.Range(center.x - size.x / 2, center.x + size.x / 2);
+            float y = Random.Range(center.y - size.y / 2, center.y + size.y / 2);
+            float z = Random.Range(center.z - size.z / 2, center.z + size.z / 2);
+
+            Vector3 point = new Vector3(x, y, z);
+
+            if (PointIsInEllipsoide(point, center, size))
+            {
+                CreateVisualizationPoint(point, parent);
+                pointsArray.Add(point);
+                i++;
+            }
+        }
+        Branches branches = this.gameObject.GetComponent<Branches>();
+        Vector3 PointLePlusBas = pointsArray[0];
+        foreach (Vector3 point in pointsArray)
+        {
+            if (point.y <= PointLePlusBas.y)
+            {
+                PointLePlusBas = point;
+            }
+        }
+        pointsArray.Remove(PointLePlusBas);
+        branches.CreateBranchFromPoint(pointsArray, PointLePlusBas, new Vector3(0, 1, 0), center, 1f);
+    }
+
+    bool PointIsInEllipsoide(Vector3 point, Vector3 center, Vector3 size)
+    {
+        if(point.x > center.x + size.x / 2 || point.x < center.x - size.x / 2)
+        {
+            return false;
+        }
+        if (point.y > center.y + size.y / 2 || point.y < center.y - size.y / 2)
+        {
+            return false;
+        }
+        if (point.z > center.z + size.z / 2 || point.z < center.z - size.z / 2)
+        {
+            return false;
+        }
+        float xy = Mathf.Pow(point.x - center.x, 2) / Mathf.Pow(size.x / 2, 2) + Mathf.Pow(point.y - center.y, 2) / Mathf.Pow(size.y / 2, 2);
+        float z = Mathf.Pow(point.z - center.z, 2) / Mathf.Pow(size.z / 2, 2);
+        if (xy + z <= 1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /*void TransformFormToPoint(GameObject forme, float epaisseurArbre, float hauteurArbre,float precision)
     {
         precision = 1 - precision;
         MeshFilter meshFilter = forme.GetComponent<MeshFilter>();
@@ -179,8 +240,8 @@ public class GenerateurDeForme : MonoBehaviour
         }
         pointsArray.Remove(elem);
         Branches branches = this.gameObject.GetComponent<Branches>();
-        branches.CreateBranchFromPoint(pointsArray,elem,new Vector3(0,1,0), forme.transform.position, 1.5f);
-    }
+        branches.CreateBranchFromPoint(pointsArray,elem,new Vector3(0,1,0), forme.transform.position, 1f);
+    }*/
 
     void CreateVisualizationPoint(Vector3 position, GameObject parent)
     {
