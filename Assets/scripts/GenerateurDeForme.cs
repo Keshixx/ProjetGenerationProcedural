@@ -56,7 +56,7 @@ public class GenerateurDeForme : MonoBehaviour
         couronne.transform.localScale = new Vector3(epaisseurArbre, hauteurArbre, epaisseurArbre);
         //TransformFormToPoint(couronne, epaisseurArbre, hauteurArbre, precisionCouronne);
         CreateRandomPointInEllipsoide(couronne.transform.position, new Vector3(epaisseurArbre, hauteurArbre, epaisseurArbre), couronne, (int)nombreDePoint);
-        TransformTroncToPoint(tronc, tailleTronc, epaisseurTronc, precisionTronc);
+        //TransformTroncToPoint(tronc, tailleTronc, epaisseurTronc, precisionTronc);
     }
 
     bool RandomBool()
