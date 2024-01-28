@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+//using for sprite 2D
 using UnityEngine;
 public class Branches : MonoBehaviour
 {
@@ -14,10 +15,9 @@ public class Branches : MonoBehaviour
     private GameObject p4;
     [SerializeField]
     private float forceGlobal = 1f;
-    public Branches()
-    {
-        
-    }
+    //sprite de la feuille
+    [SerializeField]
+    private GameObject feuillePrefab;
     void Start()
     {
         // Vector3 direction = new Vector3(0,1,0);
@@ -53,7 +53,7 @@ public class Branches : MonoBehaviour
             maListe.Add(point.transform.position);
             mesPoints.Add(point);
         }
-        CreateBranchFromPoint(maListe,p1,new Vector3(0,10,0), p1);
+        //CreateBranchFromPoint(maListe,p1,new Vector3(0,10,0), p1);
         List<Vector3> maListe2 = new List<Vector3>(maListe);
         foreach(Vector3 elem in maListe)
         {
@@ -296,8 +296,9 @@ public class Branches : MonoBehaviour
         return maListe[index];
     }
 
-    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, float force = 1.5f)
+    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, GameObject parent,float epaisseurBranche,float force = 1.5f)
     {//Y X Z
+        this.GetComponent<GenerateurDeForme>().CreateVisualizationPoint(p, parent, epaisseurBranche);
         List<Vector3> pointsVu = new List<Vector3>();
         List<Vector3> visu1 = new List<Vector3>();
         List<Vector3> visu2 = new List<Vector3>();
@@ -450,7 +451,7 @@ public class Branches : MonoBehaviour
             //     if((p.y < point.y && p.y >= 0))
             //     pointsVu.Add(point);
             // }
-            if(Vector3.Distance(point,p) <= force && !pointsVu.Contains(point) && Vector3.Angle(direction,point-p) <= 45)
+            if(Vector3.Distance(point,p) <= force && !pointsVu.Contains(point) && Vector3.Angle(direction,point-p) <= 30)
             {
                 //if((p.z > point.z && p.z <= 0) || (p.z < point.z && p.z >= 0))
                 //if((p.x >= point.x && p.x <= 0) || (p.x <= point.x && p.x >= 0))
@@ -703,16 +704,27 @@ public class Branches : MonoBehaviour
                     allPoints.Remove(elem);
                 }
                 // Debug.DrawLine(p, element, Color.green, 1000f);
+                // GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
+                // gen.CreateCylinder(p,element, parent, epaisseurBranche);
                 // newDirection = element - p;
                 // newDirection.y = Mathf.Abs(newDirection.y);
-                // CreateBranchFromPoint(allPoints,element,newDirection,origin,force*1f);
+                // CreateBranchFromPoint(allPoints,element,newDirection,origin,parent,0.1f,force*1f);
                 foreach(Vector3 elem in pointsVu)
                 {
-                    Debug.DrawLine(p, elem, Color.green, 1000f);
+                    GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
+                    gen.CreateCylinder(p,elem, parent, epaisseurBranche);
                     newDirection = elem - p;
                     newDirection.y = Mathf.Abs(newDirection.y);
-                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,force*1f);
-                    // CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin, parent,0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+
                     // CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*1f);
                 }
 
@@ -723,10 +735,19 @@ public class Branches : MonoBehaviour
                 }
                 foreach(Vector3 elem in pointsVu)
                 {
-                    Debug.DrawLine(p, elem, Color.green, 1000f);
+                    GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
+                    gen.CreateCylinder(p,elem, parent, epaisseurBranche);
                     newDirection = elem - p;
                     newDirection.y = Mathf.Abs(newDirection.y);
-                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
                     // CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*1f);
                 }
                 // Debug.DrawLine(p, direction, Color.green, 1000f);
@@ -736,6 +757,19 @@ public class Branches : MonoBehaviour
                 // if(UnityEngine.Random.Range(0,3) == 1)
                 // CreateBranchFromPoint(allPoints,direction,NewRandomDirection(newDirection2),origin,force*1f);
             }
+        }else{
+            GameObject feuille = Instantiate(feuillePrefab,p,Quaternion.identity);
+            feuille.transform.parent = parent.transform;
+            float xLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
+            float yLocalScale = Vector3.Distance(p,p+direction.normalized)/4;
+            float zLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
+            feuille.transform.localScale = new Vector3(xLocalScale,yLocalScale,zLocalScale);
+            feuille.transform.position = p + direction.normalized;
+            feuille.transform.up = direction.normalized;
+
+            //Creer une sphere rouge pour voir ou pointe la direction
+           
+
         }
     }
 
@@ -777,18 +811,6 @@ public class Branches : MonoBehaviour
         if((direction.x < 0 && x > 0) || (direction.x > 0 && x < 0))
         {
             x = -x;
-        }
-        Vector3 matchedVector = MatchingVector2(new Vector3(x,y,z));
-        while(matchedVector.x >= 0 && x <= 0 || matchedVector.x <= 0 && x >= 0)
-        {
-            x = ((float)random.NextDouble() * 2f - 1f);
-            y = ((float)random.NextDouble());
-            z = ((float)random.NextDouble() * 2f - 1f);
-            if((direction.x < 0 && x > 0) || (direction.x > 0 && x < 0))
-            {
-                x = -x;
-            }
-            matchedVector = MatchingVector2(new Vector3(x,y,z));
         }
         return new Vector3(x,y,z);
     }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Tree
   - Point
+  - Branche
   layers:
   - Default
   - TransparentFX
