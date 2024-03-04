@@ -13,14 +13,13 @@ public class GenerateurDeForme : MonoBehaviour
     [SerializeField]
     private float force = 1f;
 
-    [SerializeField]
-    private GameObject TroncParent;
-    [SerializeField]
-    private GameObject CouronneParent;
+    
     [SerializeField]
     private GameObject branchePrefab;
     [SerializeField]
     private GameObject noeudPrefab;
+    private GameObject TroncParent;
+    private GameObject CouronneParent;
 
     //slider from 0.1 to 1
     [Range(1f, 20000f)]
@@ -33,15 +32,18 @@ public class GenerateurDeForme : MonoBehaviour
     
     void Start()
     {
-        GenererArbre();
-        //Empty game object for cylinder
-        cylinder = new GameObject("cylinder");
+        // GenererArbre();
+        // //Empty game object for cylinder
+        // cylinder = new GameObject("cylinder");
 
-        cylinder.tag = "Tree";
+        // cylinder.tag = "Tree";
+        
     }
 
-    public void GenererArbre()
+    public void GenererArbre(float x = 0, float y = 0, float z = 0)
     {
+        TroncParent = GameObject.Find("tronc");
+        CouronneParent = GameObject.Find("branches");
         /*
             GameObject tronc = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             tronc.transform.localScale = new Vector3(epaisseurTronc, tailleTronc, epaisseurTronc);
@@ -54,33 +56,35 @@ public class GenerateurDeForme : MonoBehaviour
 
             TransformFormToPoint(couronne);
         */
-        //select object tronc and couronne do delete them before creating new ones
-        GameObject[] objects = GameObject.FindGameObjectsWithTag("Tree");
-        GameObject[] objects2 = GameObject.FindGameObjectsWithTag("Branche");
-        GameObject[] objects3 = GameObject.FindGameObjectsWithTag("Point");
-        foreach (GameObject obj in objects)
-        {
-            DestroyImmediate(obj);
-        }
-        foreach (GameObject obj in objects2)
-        {
-            DestroyImmediate(obj);
-        }
+        // //select object tronc and couronne do delete them before creating new ones
+        // GameObject[] objects = GameObject.FindGameObjectsWithTag("Tree");
+        // GameObject[] objects2 = GameObject.FindGameObjectsWithTag("Branche");
+        // GameObject[] objects3 = GameObject.FindGameObjectsWithTag("Point");
+        // foreach (GameObject obj in objects)
+        // {
+        //     DestroyImmediate(obj);
+        // }
+        // foreach (GameObject obj in objects2)
+        // {
+        //     DestroyImmediate(obj);
+        // }
 
-        foreach (GameObject obj in objects3)
-        {
-            DestroyImmediate(obj);
-        }
+        // foreach (GameObject obj in objects3)
+        // {
+        //     DestroyImmediate(obj);
+        // }
 
         GameObject tronc = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         tronc.tag = "Tree";
-        tronc.transform.position = new Vector3(0, 0, 0);
+        tronc.transform.position = new Vector3(x,y,z);
         tronc.name = "tronc";
+        tronc.SetActive(false);
         tronc.transform.localScale = new Vector3(epaisseurTronc, tailleTronc, epaisseurTronc);
         GameObject couronne = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         couronne.tag = "Tree";
-        couronne.transform.position = new Vector3(0, tailleTronc + hauteurArbre/2, 0);
+        couronne.transform.position = new Vector3(x, (tailleTronc + hauteurArbre/2)+y, z);
         couronne.name = "couronne";
+        couronne.SetActive(false);
         couronne.transform.localScale = new Vector3(epaisseurArbre, hauteurArbre, epaisseurArbre);
         
         //TransformFormToPoint(couronne, epaisseurArbre, hauteurArbre, precisionCouronne);
@@ -105,10 +109,10 @@ public class GenerateurDeForme : MonoBehaviour
         Vector3 point2 = new Vector3(x, forme.transform.position.y, z);
         pointsArray2.Add(point1);
         pointsArray2.Add(point2);
-        CreateVisualizationPoint(point1, TroncParent, 0.3f);
-        CreateVisualizationPoint(point2, TroncParent, 0.3f);
+        CreateVisualizationPoint(point1, TroncParent, 0.5f);
+        CreateVisualizationPoint(point2, TroncParent, 0.5f);
         Debug.DrawLine(point1, point2, Color.green, 100f);
-        CreateCylinder(point1, point2, TroncParent, 0.3f);
+        CreateCylinder(point1, point2, TroncParent, 0.5f,0.5f);
     }
 
     void CreateRandomPointInEllipsoide(Vector3 center, Vector3 size, GameObject parent, int numberOfPoints)
@@ -135,9 +139,9 @@ public class GenerateurDeForme : MonoBehaviour
         Branches branches = this.gameObject.GetComponent<Branches>();
         Vector3 PointLePlusBas = new Vector3(center.x, center.y - size.y / 2, center.z);
         Debug.DrawLine(pointsArray2[1], PointLePlusBas, Color.green, 100f);
-        CreateCylinder(pointsArray2[1], PointLePlusBas, TroncParent, 0.3f);
+        CreateCylinder(pointsArray2[1], PointLePlusBas, TroncParent, 0.5f, 0.5f);
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 1, Random.Range(-1, 1f));
-        branches.CreateBranchFromPoint(pointsArray, PointLePlusBas, randomDir, center, CouronneParent,0.1f, force);
+        branches.CreateBranchFromPoint(pointsArray, PointLePlusBas, randomDir, center, CouronneParent,0.5f, force);
     }
 
     bool PointIsInEllipsoide(Vector3 point, Vector3 center, Vector3 size)
@@ -235,14 +239,77 @@ public class GenerateurDeForme : MonoBehaviour
     }
 
 
-    public void CreateCylinder(Vector3 point1, Vector3 point2, GameObject parent, float epaisseur = 0.1f)
+    public void CreateCylinder(Vector3 point1, Vector3 point2, GameObject parent, float epaisseur = 0.1f,float epaisseurHaut = 0.1f)
     {
         //use branches prefab
         GameObject cylinder = Instantiate(branchePrefab);
         cylinder.transform.localScale = new Vector3(epaisseur, Vector3.Distance(point1, point2) / 2, epaisseur);
+        MeshFilter meshFilter = cylinder.GetComponent<MeshFilter>();
+
+        Mesh mesh = meshFilter.mesh;
+        Vector3[] vertices = mesh.vertices;
+        List<int> indexVertices = new List<int>();
+        //Récuperer le y le plus haut 
+        float yMax = vertices[0].y;
+        float ratio = epaisseurHaut / epaisseur;
+        foreach(Vector3 point in vertices)
+        {
+            if(point.y > yMax)
+            {
+                yMax = point.y;
+            }
+        }
+        //Récuperer tout les vertices qui ont le y le plus haut et les mettres dans vertices2
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            Vector3 point = vertices[i];
+            if(point.y == yMax)
+            {
+                indexVertices.Add(i);
+            }
+        }
+        for(int i = 0 ; i<vertices.Length;i++)
+        {
+            if(indexVertices.Contains(i))
+            {
+                //si x différent de 0 alors on réduit la taille de x
+                if(vertices[i].x != 0)
+                {
+                    vertices[i].x *= ratio;
+                }
+                //si z différent de 0 alors on réduit la taille de z
+                if (vertices[i].z != 0)
+                {
+                    vertices[i].z *= ratio;
+                }
+                if (vertices[i].x == 0)
+                {
+                    vertices[i].z *= ratio;
+                }
+                if (vertices[i].z == 0)
+                {
+                    vertices[i].x *= ratio;
+                }
+            }
+        }
+
+        mesh.vertices = vertices;
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
+        cylinder.GetComponent<MeshFilter>().mesh = mesh;
         cylinder.transform.position = new Vector3((point1.x + point2.x) / 2, (point1.y + point2.y) / 2, (point1.z + point2.z) / 2);
         cylinder.transform.up = point2 - point1;
         cylinder.transform.parent = parent.transform;
         cylinder.tag = "Branche";
+        //reduire la taille de la face du haut du 
+        Debug.Log("epaisseur haut :" + epaisseurHaut);
+
+    }
+
+
+    public void ClearVariables()
+    {
+        pointsArray.Clear();
+        pointsArray2.Clear();
     }
 }

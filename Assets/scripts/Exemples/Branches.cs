@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 //using for sprite 2D
 using UnityEngine;
 public class Branches : MonoBehaviour
@@ -18,6 +19,10 @@ public class Branches : MonoBehaviour
     //sprite de la feuille
     [SerializeField]
     private GameObject feuillePrefab;
+    [SerializeField]
+    private GameObject citronPrefab;
+    [SerializeField]
+    private Material citronMaterial;
     void Start()
     {
         // Vector3 direction = new Vector3(0,1,0);
@@ -297,6 +302,158 @@ public class Branches : MonoBehaviour
     }
 
     public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, GameObject parent,float epaisseurBranche,float force = 1.5f)
+    {
+        this.GetComponent<GenerateurDeForme>().CreateVisualizationPoint(p, parent, epaisseurBranche);
+        List<Vector3> pointsVu = new List<Vector3>();
+        foreach (Vector3 point in allPoints)
+        {
+            if(Vector3.Distance(point,p) <= force && !pointsVu.Contains(point) && Vector3.Angle(direction,point-p) <= 30)
+            {
+                //if((p.z > point.z && p.z <= 0) || (p.z < point.z && p.z >= 0))
+                //if((p.x >= point.x && p.x <= 0) || (p.x <= point.x && p.x >= 0))
+                if((p.y < point.y && p.y >= 0))
+                pointsVu.Add(point);
+            }
+        }
+    
+        if(pointsVu.Count >=1)
+        {
+            cpt++;
+            Vector3 newDirection;
+            Vector3 newDirection2;
+            System.Random random = new System.Random();
+            float newEpaisseur = epaisseurBranche*0.6f;
+            if(pointsVu.Count > 1)
+            {
+                int index1 = UnityEngine.Random.Range(0,pointsVu.Count);
+                int index2 = UnityEngine.Random.Range(0,pointsVu.Count);
+                
+            
+                while(index1 == index2)
+                {
+                    index2 = UnityEngine.Random.Range(0,pointsVu.Count);
+                }
+                List<Vector3> pointsVuCpy = new List<Vector3>(pointsVu);
+                for(int i = 0; i<pointsVu.Count; i++)
+                {
+                    if(i != index1 && i != index2)
+                    {
+                        pointsVuCpy.Remove(pointsVu[i]);
+                    }
+                }
+                pointsVu = pointsVuCpy;
+                Vector3 element = moyenneDe2Vex(pointsVu[0],pointsVu[1]);
+                foreach(Vector3 elem in pointsVu)
+                {
+                    allPoints.Remove(elem);
+                }
+                foreach(Vector3 elem in pointsVu)
+                {
+                    GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
+                    gen.CreateCylinder(p,elem, parent, epaisseurBranche,newEpaisseur);
+                    newDirection = elem - p;
+                    newDirection.y = Mathf.Abs(newDirection.y);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin, parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                }
+
+            }else{
+                foreach(Vector3 elem in pointsVu)
+                {
+                    allPoints.Remove(elem);
+                }
+                foreach(Vector3 elem in pointsVu)
+                {
+                    GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
+                    gen.CreateCylinder(p,elem, parent, epaisseurBranche,newEpaisseur);
+                    newDirection = elem - p;
+                    newDirection.y = Mathf.Abs(newDirection.y);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                }
+            }
+        }else{
+            GameObject feuille = Instantiate(feuillePrefab,p,Quaternion.identity);
+            feuille.transform.parent = parent.transform;
+            float xLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
+            float yLocalScale = Vector3.Distance(p,p+direction.normalized)/4;
+            float zLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
+            feuille.transform.localScale = new Vector3(xLocalScale,yLocalScale,zLocalScale);
+            feuille.transform.position = p + direction.normalized;
+            feuille.transform.up = direction.normalized;
+            if(UnityEngine.Random.Range(0,200) == 1)
+            {
+                GameObject citron = Instantiate(citronPrefab,p,Quaternion.identity);
+                citron.GetComponent<Renderer>().material = citronMaterial;
+                citron.transform.parent = parent.transform;
+                citron.transform.localScale = new Vector3(6f,6f,6f);
+                citron.transform.position = p;
+                citron.transform.up = direction.normalized;
+            }
+        }
+    }
+
+    Vector3 moyenneDe2Vex(Vector3 v1, Vector3 v2)
+    {
+        return new Vector3((v1.x+v2.x)/2,(v1.y+v2.y)/2,(v1.z+v2.z)/2);
+    }
+
+    void DeletePoint(Vector3 point,Vector3 origin)
+    {
+        GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
+        foreach(GameObject elem in points)
+        {
+            if(elem.transform.position+origin == point)
+            {
+                Destroy(elem);
+            }
+        }
+    }
+
+    Vector3 VectorMoyenEntreXVector(List<Vector3> points)
+    {
+        Vector3 vecteurMoyen = new Vector3(0,0,0);
+        foreach(Vector3 point in points)
+        {
+            vecteurMoyen += point;
+        }
+        vecteurMoyen /= points.Count;
+        return vecteurMoyen;
+    }
+
+    Vector3 NewRandomDirection(Vector3 direction)
+    {
+        System.Random random = new System.Random();
+        
+        float x = ((float)random.NextDouble() * 2f - 1f);
+        float y = ((float)random.NextDouble());
+        float z = ((float)random.NextDouble() * 2f - 1f);
+        if((direction.x < 0 && x > 0) || (direction.x > 0 && x < 0))
+        {
+            x = -x;
+        }
+        return new Vector3(x,y,z);
+    }
+}
+
+
+
+/* //Version ténèbre pour le rapport
+    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, GameObject parent,float epaisseurBranche,float force = 1.5f)
     {//Y X Z
         this.GetComponent<GenerateurDeForme>().CreateVisualizationPoint(p, parent, epaisseurBranche);
         List<Vector3> pointsVu = new List<Vector3>();
@@ -439,9 +596,6 @@ public class Branches : MonoBehaviour
         //         isHorizontal = true;
         //         break;
         // }
-        Debug.Log("isVertical: "+isVertical);
-        Debug.Log("isHorizontal : "+isHorizontal);
-        Debug.Log("isProfondeur : "+isProfondeur);
         foreach (Vector3 point in allPoints)
         {
             // if (DansPyramideY(visu1, point) && !pointsVu.Contains(point))
@@ -648,7 +802,6 @@ public class Branches : MonoBehaviour
         //     }
         // }
     
-        Debug.Log(pointsVu.Count);
         if(pointsVu.Count >=1)
         {
             cpt++;
@@ -678,6 +831,7 @@ public class Branches : MonoBehaviour
             Vector3 newDirection;
             Vector3 newDirection2;
             System.Random random = new System.Random();
+            float newEpaisseur = epaisseurBranche*0.6f;
             if(pointsVu.Count > 1)
             {
                 int index1 = UnityEngine.Random.Range(0,pointsVu.Count);
@@ -697,7 +851,6 @@ public class Branches : MonoBehaviour
                     }
                 }
                 pointsVu = pointsVuCpy;
-                Debug.Log("PointsVu : "+pointsVu.Count);
                 Vector3 element = moyenneDe2Vex(pointsVu[0],pointsVu[1]);
                 foreach(Vector3 elem in pointsVu)
                 {
@@ -712,18 +865,18 @@ public class Branches : MonoBehaviour
                 foreach(Vector3 elem in pointsVu)
                 {
                     GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
-                    gen.CreateCylinder(p,elem, parent, epaisseurBranche);
+                    gen.CreateCylinder(p,elem, parent, epaisseurBranche,newEpaisseur);
                     newDirection = elem - p;
                     newDirection.y = Mathf.Abs(newDirection.y);
-                    CreateBranchFromPoint(allPoints,elem,newDirection,origin, parent,0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin, parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
 
                     // CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*1f);
                 }
@@ -736,18 +889,18 @@ public class Branches : MonoBehaviour
                 foreach(Vector3 elem in pointsVu)
                 {
                     GenerateurDeForme gen = this.GetComponent<GenerateurDeForme>();
-                    gen.CreateCylinder(p,elem, parent, epaisseurBranche);
+                    gen.CreateCylinder(p,elem, parent, epaisseurBranche,newEpaisseur);
                     newDirection = elem - p;
                     newDirection.y = Mathf.Abs(newDirection.y);
-                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, 0.1f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
                     // CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,force*1f);
                 }
                 // Debug.DrawLine(p, direction, Color.green, 1000f);
@@ -766,52 +919,19 @@ public class Branches : MonoBehaviour
             feuille.transform.localScale = new Vector3(xLocalScale,yLocalScale,zLocalScale);
             feuille.transform.position = p + direction.normalized;
             feuille.transform.up = direction.normalized;
+            if(UnityEngine.Random.Range(0,200) == 1)
+            {
+                GameObject citron = Instantiate(citronPrefab,p,Quaternion.identity);
+                //reset prefab material
+                citron.GetComponent<Renderer>().material = citronMaterial;
+                citron.transform.parent = parent.transform;
+                citron.transform.localScale = new Vector3(6f,6f,6f);
+                citron.transform.position = p;
+                citron.transform.up = direction.normalized;
+            }
 
             //Creer une sphere rouge pour voir ou pointe la direction
            
 
         }
-    }
-
-    Vector3 moyenneDe2Vex(Vector3 v1, Vector3 v2)
-    {
-        return new Vector3((v1.x+v2.x)/2,(v1.y+v2.y)/2,(v1.z+v2.z)/2);
-    }
-
-    void DeletePoint(Vector3 point,Vector3 origin)
-    {
-        GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
-        foreach(GameObject elem in points)
-        {
-            if(elem.transform.position+origin == point)
-            {
-                Destroy(elem);
-            }
-        }
-    }
-
-    Vector3 VectorMoyenEntreXVector(List<Vector3> points)
-    {
-        Vector3 vecteurMoyen = new Vector3(0,0,0);
-        foreach(Vector3 point in points)
-        {
-            vecteurMoyen += point;
-        }
-        vecteurMoyen /= points.Count;
-        return vecteurMoyen;
-    }
-
-    Vector3 NewRandomDirection(Vector3 direction)
-    {
-        System.Random random = new System.Random();
-        
-        float x = ((float)random.NextDouble() * 2f - 1f);
-        float y = ((float)random.NextDouble());
-        float z = ((float)random.NextDouble() * 2f - 1f);
-        if((direction.x < 0 && x > 0) || (direction.x > 0 && x < 0))
-        {
-            x = -x;
-        }
-        return new Vector3(x,y,z);
-    }
-}
+    }*/
