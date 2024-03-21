@@ -11,15 +11,15 @@ public class GenerateurDeForme : MonoBehaviour
     public float epaisseurArbre = 0.5f;
 
     [SerializeField]
-    private float force = 1f;
+    public float force = 1f;
 
     
     [SerializeField]
-    private GameObject branchePrefab;
+    public GameObject branchePrefab;
     [SerializeField]
-    private GameObject noeudPrefab;
-    private GameObject TroncParent;
-    private GameObject CouronneParent;
+    public GameObject noeudPrefab;
+    public GameObject TroncParent;
+    public GameObject CouronneParent;
 
     //slider from 0.1 to 1
     [Range(1f, 20000f)]
@@ -42,8 +42,10 @@ public class GenerateurDeForme : MonoBehaviour
 
     public void GenererArbre(float x = 0, float y = 0, float z = 0)
     {
-        TroncParent = GameObject.Find("tronc");
-        CouronneParent = GameObject.Find("branches");
+        TroncParent = new GameObject("tronc");
+        CouronneParent = new GameObject("couronne");
+        //Create empty object
+
         /*
             GameObject tronc = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             tronc.transform.localScale = new Vector3(epaisseurTronc, tailleTronc, epaisseurTronc);
@@ -109,10 +111,10 @@ public class GenerateurDeForme : MonoBehaviour
         Vector3 point2 = new Vector3(x, forme.transform.position.y, z);
         pointsArray2.Add(point1);
         pointsArray2.Add(point2);
-        CreateVisualizationPoint(point1, TroncParent, 0.5f);
-        CreateVisualizationPoint(point2, TroncParent, 0.5f);
+        CreateVisualizationPoint(point1, TroncParent, epaisseurTronc);
+        CreateVisualizationPoint(point2, TroncParent, epaisseurTronc);
         Debug.DrawLine(point1, point2, Color.green, 100f);
-        CreateCylinder(point1, point2, TroncParent, 0.5f,0.5f);
+        CreateCylinder(point1, point2, TroncParent, epaisseurTronc, epaisseurTronc);
     }
 
     void CreateRandomPointInEllipsoide(Vector3 center, Vector3 size, GameObject parent, int numberOfPoints)
@@ -139,9 +141,9 @@ public class GenerateurDeForme : MonoBehaviour
         Branches branches = this.gameObject.GetComponent<Branches>();
         Vector3 PointLePlusBas = new Vector3(center.x, center.y - size.y / 2, center.z);
         Debug.DrawLine(pointsArray2[1], PointLePlusBas, Color.green, 100f);
-        CreateCylinder(pointsArray2[1], PointLePlusBas, TroncParent, 0.5f, 0.5f);
+        CreateCylinder(pointsArray2[1], PointLePlusBas, TroncParent, epaisseurTronc, epaisseurTronc);
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 1, Random.Range(-1, 1f));
-        branches.CreateBranchFromPoint(pointsArray, PointLePlusBas, randomDir, center, CouronneParent,0.5f, force);
+        branches.CreateBranchFromPoint(pointsArray, PointLePlusBas, randomDir, center, CouronneParent,epaisseurTronc, force);
     }
 
     bool PointIsInEllipsoide(Vector3 point, Vector3 center, Vector3 size)

@@ -8,6 +8,8 @@ TagManager:
   - Point
   - Branche
   - Ground
+  - Mur
+  - Cellule
   layers:
   - Default
   - TransparentFX
