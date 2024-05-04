@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//multi thread
+using System.Threading;
 
 public class GenerateurDeForme : MonoBehaviour
 {

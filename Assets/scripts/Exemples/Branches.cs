@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 //using for sprite 2D
 using UnityEngine;
+//multi threading
+using System.Threading;
 public class Branches : MonoBehaviour
 {
     [SerializeField]
@@ -301,9 +303,8 @@ public class Branches : MonoBehaviour
         return maListe[index];
     }
 
-    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, GameObject parent,float epaisseurBranche,float force = 1.5f)
+    private List<Vector3> AddPoints(Vector3 p, List<Vector3> allPoints, Vector3 direction, float force)
     {
-        this.GetComponent<GenerateurDeForme>().CreateVisualizationPoint(p, parent, epaisseurBranche);
         List<Vector3> pointsVu = new List<Vector3>();
         foreach (Vector3 point in allPoints)
         {
@@ -315,6 +316,16 @@ public class Branches : MonoBehaviour
                 pointsVu.Add(point);
             }
         }
+        return pointsVu;
+    }
+
+    public void CreateBranchFromPoint(List<Vector3> allPoints, Vector3 p, Vector3 direction,Vector3 origin, GameObject parent,float epaisseurBranche,float force = 1.5f)
+    {
+        this.GetComponent<GenerateurDeForme>().CreateVisualizationPoint(p, parent, epaisseurBranche);
+        Task<List<Vector3>> task = Task.Run(() => AddPoints(p,allPoints,direction, force));
+        List<Vector3> pointsVu = new List<Vector3>();
+        pointsVu = task.Result;
+        
     
         if(pointsVu.Count >=1)
         {
@@ -362,6 +373,18 @@ public class Branches : MonoBehaviour
                     CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
                     CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
                     CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+
+                    //thread to create branches
+                    // Task task1 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.6f,force*1f));
+                    // Task task2 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f));
+                    // Task task3 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task4 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task5 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f));
+                    // Task task6 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task7 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task8 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task9 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task.WaitAll(task1,task2,task3,task4,task5,task6,task7,task8,task9);
                 }
 
             }else{
@@ -384,6 +407,18 @@ public class Branches : MonoBehaviour
                     CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
                     CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
                     CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+
+                    //thread to create branches
+                    // Task task1 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.6f,force*1f));
+                    // Task task2 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f));
+                    // Task task3 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task4 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task5 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent,epaisseurBranche*0.6f,force*1f));
+                    // Task task6 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task7 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task8 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task task9 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f));
+                    // Task.WaitAll(task1,task2,task3,task4,task5,task6,task7,task8,task9);
                 }
             }
         }else{

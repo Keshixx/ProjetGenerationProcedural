@@ -37,7 +37,8 @@ public class LeafFalling : MonoBehaviour
             }
             else{
                 isPressed = false;
-                GetComponent<Rigidbody2D>().gravityScale = 1;
+                //Add rigidbody2D
+                this.gameObject.AddComponent<Rigidbody2D>();
                 // Vector3 position = this.transform.position;
                 // Vector3 centre = new Vector3(position.x + distance, position.y, position.z);
                 // RotationInf(180,330,centre);

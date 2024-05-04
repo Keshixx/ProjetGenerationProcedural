@@ -332,7 +332,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coordX: 0
   coordY: 0
-  nbCellules: 300
+  nbCellules: 30
   citron: {fileID: 4761017519399061122, guid: 2655adbf962c2754d8ad1ae5259a2c53, type: 3}
   feuilles: {fileID: 4742315504231751472, guid: c8c9e184c88489646bb465f967db1277, type: 3}
   citronMaterial: {fileID: 2100000, guid: eb1782acea99cb340b31a5b326dc701c, type: 2}

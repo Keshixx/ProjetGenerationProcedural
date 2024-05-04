@@ -558,7 +558,9 @@ MonoBehaviour:
   force: 3.3
   branchePrefab: {fileID: 844674888400333953, guid: 812a6de3433388544ab1407412a1cecd, type: 3}
   noeudPrefab: {fileID: 3044085869364414921, guid: e9378561cce17ce40a02ee0d11a34181, type: 3}
-  nombreDePoint: 500
+  TroncParent: {fileID: 0}
+  CouronneParent: {fileID: 0}
+  nombreDePoint: 1500
   precisionTronc: 0.1
   autoUpdate: 0
 --- !u!4 &1408572279
