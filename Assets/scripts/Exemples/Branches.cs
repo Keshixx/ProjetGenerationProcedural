@@ -398,15 +398,15 @@ public class Branches : MonoBehaviour
                     gen.CreateCylinder(p,elem, parent, epaisseurBranche,newEpaisseur);
                     newDirection = elem - p;
                     newDirection.y = Mathf.Abs(newDirection.y);
-                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
-                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.6f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
+                    CreateBranchFromPoint(allPoints,elem,NewRandomDirection(newDirection),origin,parent, epaisseurBranche*0.9f,force*1f);
 
                     //thread to create branches
                     // Task task1 = Task.Run(() => CreateBranchFromPoint(allPoints,elem,newDirection,origin,parent,epaisseurBranche*0.6f,force*1f));
@@ -422,26 +422,38 @@ public class Branches : MonoBehaviour
                 }
             }
         }else{
+            // GameObject feuille = Instantiate(feuillePrefab,p,Quaternion.identity);
+            // feuille.transform.parent = parent.transform;
+            // float xLocalScale = (Vector3.Distance(p,p+direction.normalized)/4);
+            // float yLocalScale = Vector3.Distance(p,p+direction.normalized)/4;
+            // float zLocalScale = (Vector3.Distance(p,p+direction.normalized)/4);
+            // // float xLocalScale = 0.01f;
+            // // float yLocalScale = 0.01f;
+            // // float zLocalScale = 0.01f;
+            // feuille.transform.localScale = new Vector3(xLocalScale,yLocalScale,zLocalScale);
+            // feuille.transform.position = p + (direction.normalized/(((Vector3.Distance(p,p+direction.normalized)/4))/0.1f));
+            // feuille.transform.up = direction.normalized;
+            
+
+
             GameObject feuille = Instantiate(feuillePrefab,p,Quaternion.identity);
             feuille.transform.parent = parent.transform;
-            // float xLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
-            // float yLocalScale = Vector3.Distance(p,p+direction.normalized)/4;
-            // float zLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
-            float xLocalScale = 0.01f;
-            float yLocalScale = 0.01f;
-            float zLocalScale = 0.01f;
+            float xLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
+            float yLocalScale = Vector3.Distance(p,p+direction.normalized)/4;
+            float zLocalScale = (Vector3.Distance(p,p+direction.normalized)/4)/2;
             feuille.transform.localScale = new Vector3(xLocalScale,yLocalScale,zLocalScale);
-            feuille.transform.position = p + (direction.normalized/(((Vector3.Distance(p,p+direction.normalized)/4)/2)/0.005f));
+            feuille.transform.position = p + direction.normalized;
             feuille.transform.up = direction.normalized;
-            // if(UnityEngine.Random.Range(0,200) == 1)
-            // {
-            //     GameObject citron = Instantiate(citronPrefab,p,Quaternion.identity);
-            //     citron.GetComponent<Renderer>().material = citronMaterial;
-            //     citron.transform.parent = parent.transform;
-            //     citron.transform.localScale = new Vector3(6f,6f,6f);
-            //     citron.transform.position = p;
-            //     citron.transform.up = direction.normalized;
-            // }
+
+            if(UnityEngine.Random.Range(0,200) == 1)
+            {
+                GameObject citron = Instantiate(citronPrefab,p,Quaternion.identity);
+                citron.GetComponent<Renderer>().material = citronMaterial;
+                citron.transform.parent = parent.transform;
+                citron.transform.localScale = new Vector3(6f,6f,6f);
+                citron.transform.position = p;
+                citron.transform.up = direction.normalized;
+            }
         }
     }
 

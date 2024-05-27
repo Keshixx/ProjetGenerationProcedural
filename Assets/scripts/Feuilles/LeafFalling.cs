@@ -11,7 +11,7 @@ public class LeafFalling : MonoBehaviour
     float timeToFall;
     void Start()
     {
-        timeToFall = UnityEngine.Random.Range(0f,60f);
+        timeToFall = UnityEngine.Random.Range(0f,10f);
     }
 
     // Update is called once per frame

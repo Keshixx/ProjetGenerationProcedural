@@ -319,7 +319,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &123242419
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -443,6 +443,8 @@ MonoBehaviour:
   force: 5
   branchePrefab: {fileID: 844674888400333953, guid: 812a6de3433388544ab1407412a1cecd, type: 3}
   noeudPrefab: {fileID: 3044085869364414921, guid: e9378561cce17ce40a02ee0d11a34181, type: 3}
+  TroncParent: {fileID: 0}
+  CouronneParent: {fileID: 0}
   nombreDePoint: 600
   precisionTronc: 0.1
   autoUpdate: 0

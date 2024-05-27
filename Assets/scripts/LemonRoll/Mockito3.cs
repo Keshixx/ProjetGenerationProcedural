@@ -41,7 +41,7 @@ public class Mockito3 : MonoBehaviour
             }
             else{
                 GetComponent<Rigidbody>().useGravity = false;
-                if(UnityEngine.Random.Range(0,3) == 0)
+                if(UnityEngine.Random.Range(0,2) == 0)
                 {
                     Vector3 position = this.transform.position; 
                     GenerateurDeForme genForme = GetComponent<GenerateurDeForme>();

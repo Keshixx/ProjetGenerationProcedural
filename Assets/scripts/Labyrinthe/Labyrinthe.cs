@@ -39,7 +39,7 @@ public class Labyrinthe : MonoBehaviour
             nbCellulesY = carre;
         }
         GenerateCellules();
-        AfficherLabyrinthe3D();
+        AfficherLabyrintheArbre();
     }
 
     void Update()
